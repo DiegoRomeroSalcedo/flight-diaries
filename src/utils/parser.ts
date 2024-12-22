@@ -1,12 +1,12 @@
 import { isDate, isString, isVisibility, isWeather } from "./typeGuard";
 import { Visibility, Weather } from "../types";
+import { z } from "zod";
 
 const parseComment = (comment: unknown): string => {
-    if (!isString(comment)) {
-        throw new Error('Incorrect or missing comment');
-    }
+    const mySchema = z.string();
+    mySchema.parse(comment);
 
-    return comment;
+    return comment as string;
 };
 
 const parseDate = (date: unknown): string => {
