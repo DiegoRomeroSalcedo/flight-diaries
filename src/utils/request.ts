@@ -1,22 +1,16 @@
-import { NewDiaryEntry } from "../types";
-import parser from "./parser";
+import { NewDiaryEntry, Visibility, Weather } from "../types";
+// import parser from "./parser"; // Due to the use of zod, we don´t need to use any more parser
+import { z } from "zod";
+
+export const newEntrySchema = z.object({
+    weather: z.nativeEnum(Weather), // fake the return value
+    visibility: z.nativeEnum(Visibility),
+    date: z.string().date(),
+    comment: z.string().optional(),
+});
 
 const toNewDiaryEntry = (object: unknown): NewDiaryEntry => {
-    if (!object || typeof object !== 'object') {
-        throw new Error('Incorrect or missing object');
-    }
-
-    if ('comment' in object && 'date' in object && 'weather' in object && 'visibility' in object) {
-        const newEntry: NewDiaryEntry = {
-            weather: parser.parseWeather(object.weather), // fake the return value
-            visibility: parser.parseVisibility(object.visibility),
-            date: parser.parseDate(object.date),
-            comment: parser.parseComment(object.comment),
-        };
-        return newEntry;
-    }
-
-    throw new Error('Incorrect data: some fields are missing');
+    return newEntrySchema.parse(object);
 };
 
 export default toNewDiaryEntry;
